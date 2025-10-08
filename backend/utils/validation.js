@@ -1,4 +1,4 @@
-const {body} = require('express-validator');
+import { body } from "express-validator"
 
 // RegEx Whitelisting patterns
 // Full name: Letters, spaces, hyphens & apostrophe's only (2 - 50 chars)
@@ -30,7 +30,7 @@ const SWIFT_CODE_REGEX = /^[A-Za-z0-9]{8,11}$/;
 
 
 // Middleware function to validate customer registration inputs
-const validateRegistration = [
+export const validateRegistration = [
     // full name whitelisting
     body('fullName').matches(FULL_NAME_REGEX).withMessage('Full Name must be 2 to 50 characters and may only contain letters, spaces, hyphens or apostrophes.'),
 
@@ -47,13 +47,13 @@ const validateRegistration = [
     body('password').matches(PASSWORD_REGEX).withMessage('Password must be at least 8 characters, with an uppercase, lowercase, number and symbol.')
 ];
 
-const validateLogin = [
+export const validateLogin = [
     // username whitelisting for login
     body('username').matches(USERNAME_REGEX).withMessage('Invalid username format.')
 ]
 
 // Middleware function to validate payment inputs
-const validatePayment = [
+export const validatePayment = [
 
     // amount whitelisting
     body('amount').matches(AMOUNT_REGEX).withMessage('Payment amount must be a number with up to 2 decimal places.'),
@@ -68,8 +68,3 @@ const validatePayment = [
     body('swiftCode').matches(SWIFT_CODE_REGEX).withMessage('SWIFT code must be 8 or 11 alphanumeric characters.')
 ];
 
-module.exports = {
-    validateRegistration,
-    validateLogin,
-    validatePayment
-};

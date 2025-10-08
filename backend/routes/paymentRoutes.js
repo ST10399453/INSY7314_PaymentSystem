@@ -1,7 +1,7 @@
 import express from "express";
 import {validationResult} from 'express-validator';
-import { validatePayment } from "../utils/validation";
-import Transaction from "../models/Transaction";
+import { validatePayment } from "../utils/validation.js";
+import Transaction from "../models/Transaction.js";
 
 const router = express.Router();
 
