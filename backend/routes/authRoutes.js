@@ -98,26 +98,24 @@ router.post("/signup", validateRegistration, async (req, res) => {
 });
 
 // ------------- Login --------------
-router.post("/login", validateLogin, async function (req, res) {
-  // Whitelisting/validation check
+router.post("/login", validateLogin, async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    // reject request if whitelisting fails
-    return res.status(400).json({ errors: errors.array() });
-  }
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
   try {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res.status(400).json({ message: "username and password are required" });
+      return res.status(400).json({ message: "Username and password are required" });
     }
 
-    const user = await User.findOneByName(username);
+    // Find user using Mongoose
+    const user = await User.findOne({ username });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Compare hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid password" });
@@ -129,5 +127,4 @@ router.post("/login", validateLogin, async function (req, res) {
     return res.status(500).json({ error: err.message });
   }
 });
-
 export default router;
