@@ -17,7 +17,7 @@ function Login() {
     setUsername(value);
 
     // Client-side whitelisting check
-    if(!USERNAME_REGEX.text(value)){
+    if(!USERNAME_REGEX.test(value)){
       setUsernameError("Username musr be 4 to 20 alphanumeric characters.");
     }
     else{
