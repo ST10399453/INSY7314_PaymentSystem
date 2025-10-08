@@ -2,14 +2,40 @@ import React, { useState } from "react";
 import { login } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 
+// RegEx pattern
+const USERNAME_REGEX = /^[a-zA-Z0-9]{4,20}$/;
+
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [usernameError, setUsernameError] = useState("");
   const navigate = useNavigate();
+
+  const handleUsernameChange = (e) => {
+    const value = e.target.value;
+    setUsername(value);
+
+    // Client-side whitelisting check
+    if(!USERNAME_REGEX.text(value)){
+      setUsernameError("Username musr be 4 to 20 alphanumeric characters.");
+    }
+    else{
+      // clear error is input is valid
+      setUsernameError("");
+    }
+  }
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setMessage("");
+
+    // final check before sending to API
+    if(usernameError || !USERNAME_REGEX.test(username)){
+      setMessage("Please correct the username before logging in.");
+      return;
+    }
+
     try {
       const res = await login(username, password);
       setMessage(res.message);
@@ -17,7 +43,7 @@ function Login() {
         navigate("/home");
       }
     } catch (err) {
-      setMessage(err.message);
+      setMessage(err.message || "Login failed");
     }
   };
 
@@ -30,10 +56,11 @@ function Login() {
           <input
             type="text"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={handleUsernameChange}
             required
             placeholder="Enter username"
           />
+          {usernameError && <p className="error-message">{usernameError}</p>}
         </div>
 
         <div className="form-group">

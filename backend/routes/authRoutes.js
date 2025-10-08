@@ -1,21 +1,34 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
+import {validationResult} from 'express-validator';
+import {validateRegistration} from '../utils/validation.js';
+import {validateLogin} from '../utils/validation.js';
 
 const router = express.Router();
 
-// Signup
-router.post("/signup", async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    const existing = await User.findOne({ name: username });
+// Signup with server-side RegEx whitelisting
+router.post("/signup", validateRegistration, async (req, res) => {
+  
+  // whitelisting check
+  const errors = validationResult(req);
+  if(!errors.isEmpty()){
+    // reject request if whitelisting fails
+    return res.status(400).json({errors: errors.array()});
+  }
 
-    if (existing) {
+  try {
+    const { fullName, idNumber, accountNumber, username, password } = req.body;
+    // check for existing user by username
+    const existingUser = await User.findOne({ username: username });
+    if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name: username, password: hashedPassword });
+    // create new user with all required fields
+    const newUser = new User({ fullName, idNumber, accountNumber, username, password: hashedPassword });
     await newUser.save();
 
     res.status(201).json({ message: "User created successfully" });
@@ -25,10 +38,18 @@ router.post("/signup", async (req, res) => {
 });
 
 // Login
-router.post("/login", async (req, res) => {
+router.post("/login", validateLogin, async (req, res) => {
+
+  // whitelisting check
+  const errors = validateResult(req);
+  if(!errors.isEmpty()){
+    // reject request if whitelisting fails
+    return res.status(404).json({errors: errors.array()});
+  }
+
   try {
     const { username, password } = req.body;
-    const user = await User.findOne({ name: username });
+    const user = await User.findOne({ username: username });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
