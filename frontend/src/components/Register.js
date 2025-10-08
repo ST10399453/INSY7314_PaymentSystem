@@ -3,7 +3,7 @@ import { signup } from "../api/auth";
 
 function Register() {
   const [username, setUsername] = useState("");
-  const [firstname, setFirstname] = useState("");
+  const [fullName, setFullname] = useState("");
   const [idNumber, setIdNumber] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [password, setPassword] = useState("");
@@ -12,7 +12,7 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const res = await signup(username, firstname, idNumber, accountNumber, password);
+      const res = await signup(username, fullName, idNumber, accountNumber, password);
       setMessage(res.message);
     } catch (err) {
       setMessage(err.message);
@@ -24,11 +24,11 @@ function Register() {
       <h2>Signup</h2>
       <form onSubmit={handleRegister}>
         <div className="form-group">
-          <label>First Name:</label>
+          <label>Full Name:</label>
           <input
             type="text"
-            value={firstname}
-            onChange={(e) => setFirstname(e.target.value)}
+            value={fullName}
+            onChange={(e) => setFullname(e.target.value)}
             required
           />
         </div>
