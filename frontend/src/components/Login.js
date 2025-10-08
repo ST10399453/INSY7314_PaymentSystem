@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { login } from "../api/auth";
 import { useNavigate } from "react-router-dom";
+import "../Login.css";
 
-// RegEx pattern
 const USERNAME_REGEX = /^[a-zA-Z0-9]{4,20}$/;
 
 function Login() {
@@ -15,30 +15,28 @@ function Login() {
   const handleUsernameChange = (e) => {
     const value = e.target.value;
     setUsername(value);
-
-    // Client-side whitelisting check
-    if(!USERNAME_REGEX.test(value)){
-      setUsernameError("Username musr be 4 to 20 alphanumeric characters.");
-    }
-    else{
-      // clear error is input is valid
+    if (!USERNAME_REGEX.test(value)) {
+      setUsernameError("Username must be 4 to 20 alphanumeric characters.");
+    } else {
       setUsernameError("");
     }
-  }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage("");
 
-    // final check before sending to API
-    if(usernameError || !USERNAME_REGEX.test(username)){
+    if (usernameError || !USERNAME_REGEX.test(username)) {
       setMessage("Please correct the username before logging in.");
       return;
     }
 
     try {
       const res = await login(username, password);
-      setMessage(res.message);
+      if (res.token) {
+        localStorage.setItem("token", res.token);
+      }
+      setMessage(res.message || "Login successful");
       if (res.message === "Login successful") {
         navigate("/home");
       }
@@ -74,9 +72,7 @@ function Login() {
           />
         </div>
 
-        <button type="submit" className="submit-btn">
-          Login
-        </button>
+        <button type="submit" className="submit-btn">Login</button>
       </form>
 
       {message && <p>{message}</p>}

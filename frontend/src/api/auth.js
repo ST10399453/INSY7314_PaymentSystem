@@ -30,19 +30,3 @@ export const login = async (username, password) => {
     throw error.response?.data || { message: "Login failed" };
   }
 };
-
-//const PAYMENT_API_URL = "http";
-
-//export const sendPayment = async (paymentData, token) => {
-  //try{
-   // const response = await axios.post(`${PAYMENT_API_URL}/submit`, paymentData, {
-   //   headers: {
-   //     Authorization: `Bearer ${token}`,
-   //   },
-  //  });
- //   return response.data;
- // }
-//  catch (error){
- //   throw error.response?.data || {message: "Payment submission failed"};
- // }
-//}

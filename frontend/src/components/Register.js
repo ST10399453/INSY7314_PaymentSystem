@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { signup } from "../api/auth";
+import "../Register.css"
 
 function Register() {
   const [username, setUsername] = useState("");
