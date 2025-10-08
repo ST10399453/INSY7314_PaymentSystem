@@ -4,7 +4,7 @@ import http from "http";
 import fs from "fs";
 import dotenv from "dotenv";
 import cors from "cors";
-import connect from "./db/db.js";                // ✅ default import
+import connect from "./db/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import { applySecurity } from "./utils/security.js";
