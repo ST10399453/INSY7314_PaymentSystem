@@ -26,7 +26,7 @@ router.post("/signup", validateRegistration, async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-//Check if user already exists
+    //Check if user already exists
     const existingById = await getUsersCollection().where("idNumber", "==", idNumber).limit(1).get();
     if (!existingById.empty) return res.status(400).json({ message: "ID number already in use" });
     const existingByAcct = await getUsersCollection().where("accountNumber", "==", accountNumber).limit(1).get();
