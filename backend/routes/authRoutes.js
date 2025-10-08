@@ -42,8 +42,8 @@ router.post("/signup", validateRegistration, async (req, res) => {
     const newUser = new User({
       username,
       fullName,
-      idNumberHash,
-      accountNumberHash,
+      idNumber,
+      accountNumber,
       password: hashedPassword,
     });
 
