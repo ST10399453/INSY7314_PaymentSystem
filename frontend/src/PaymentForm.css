@@ -1,51 +1,294 @@
-.payment-form {
-  max-width: 480px;
-  margin: 80px auto;
+/* Payment Form Container */
+.payment-form-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
 }
 
-.payment-form h2 {
-  color: #222;
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
+/* Decorative Background Circles */
+.payment-form-wrapper::before,
+.payment-form-wrapper::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 6s ease-in-out infinite;
 }
 
-.payment-form select {
+.payment-form-wrapper::before {
+  width: 300px;
+  height: 300px;
+  top: -100px;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.payment-form-wrapper::after {
+  width: 400px;
+  height: 400px;
+  bottom: -150px;
+  right: -150px;
+  animation-delay: 3s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+  }
+}
+
+/* Form Container */
+.form-container.payment-form {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 15px;
-  background-color: white;
-  cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  max-width: 500px;
+  position: relative;
+  z-index: 1;
+  animation: slideIn 0.5s ease-out;
 }
 
-.payment-form select:focus {
-  border-color: #00c4ff;
-  box-shadow: 0 0 4px rgba(0, 196, 255, 0.4);
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Icon Container */
+.payment-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3);
+}
+
+.payment-icon svg {
+  width: 40px;
+  height: 40px;
+  color: white;
+}
+
+/* Heading */
+.payment-form h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  position: relative;
+}
+
+/* Tooltip Styling */
+.tooltip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: help;
+  color: #2ecc71;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tooltip:hover {
+  transform: scale(1.1);
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: #222;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 10;
+  max-width: 250px;
+  white-space: normal;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-12px);
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+/* Input Fields */
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: #f9f9f9;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus {
   outline: none;
+  border-color: #2ecc71;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.payment-form select.error {
-  border-color: #d93025;
-  background-color: #fef2f2;
+.form-group input.error,
+.form-group select.error {
+  border-color: #e74c3c;
+  background: #fff5f5;
 }
 
-/* .payment-form input[type="number"] {
-  -moz-appearance: textfield;
-} */
-
-.payment-form input[type="number"]::-webkit-outer-spin-button,
-.payment-form input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.form-group input.error:focus,
+.form-group select.error:focus {
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
 }
 
-.payment-form .submit-btn {
-  background-color: #16a34a;
-  margin-top: 1rem;
+/* Select Dropdown */
+.form-group select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
 }
 
-.payment-form .submit-btn:hover {
-  background-color: #15803d;
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+/* Error Messages */
+.error-message {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
+.general-error {
+  background: #fff5f5;
+  color: #e74c3c;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 15px;
+  font-size: 14px;
+  border-left: 4px solid #e74c3c;
+}
+
+/* Success Message */
+.success-message {
+  background: #f0fdf4;
+  color: #16a34a;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 15px;
+  font-size: 14px;
+  border-left: 4px solid #16a34a;
+}
+
+/* Security Badge */
+.security-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+  color: #666;
+  font-size: 13px;
+}
+
+.security-badge svg {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  color: #16a34a;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .form-container.payment-form {
+    padding: 30px 20px;
+  }
+
+  .payment-form h2 {
+    font-size: 24px;
+  }
+
+  .payment-form-wrapper::before,
+  .payment-form-wrapper::after {
+    display: none;
+  }
 }
