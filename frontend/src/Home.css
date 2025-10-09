@@ -1,26 +1,3 @@
-/* .home-container {
-  min-height: calc(100vh - 60px);
-}
-
-.hero-section {
-  padding: 80px 20px;
-  text-align: center;
-  background: #dff5e7;
-}
-
-.hero-content {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.hero-title {
-  font-size: 48px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  color: #1a1a1a;
-  line-height: 1.2;
-}
-
 /* Updated highlight color to use pastel green #00ff7f */
 .hero-title .highlight {
   color: #2ECC71;
@@ -131,7 +108,8 @@
   .features-grid {
     grid-template-columns: 1fr;
   }
-} */
+}
+
 .home-container {
   min-height: calc(100vh - 60px);
 }
