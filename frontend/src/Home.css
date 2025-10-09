@@ -65,6 +65,17 @@
   transform: translateY(-2px);
 }
 
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+  transform: translateY(-2px);
+}
+
 .features-section {
   padding: 80px 20px;
   background: white;

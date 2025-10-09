@@ -1,9 +1,17 @@
 "use client"
 
 import { Link } from "react-router-dom"
+import { useState, useEffect } from "react"
 import "../Home.css"
 
 function Home() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    setIsAuthenticated(!!token) // true if token exists, false if not
+  }, [])
+
   return (
     <div className="home-container">
       {/* Hero Section */}
@@ -15,10 +23,22 @@ function Home() {
           <p className="hero-subtitle">
             Fast, secure international payments to over 180 countries.
           </p>
+
           <div className="hero-buttons">
-            <Link to="/payment" className="btn btn-primary">
-              Make a Payment
-            </Link>
+            {isAuthenticated ? (
+              <Link to="/payment" className="btn btn-primary">
+                Make a Payment
+              </Link>
+            ) : (
+              <>
+                <Link to="/login" className="btn btn-primary">
+                  Login
+                </Link>
+                <Link to="/signup" className="btn btn-secondary">
+                  Register
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </section>
