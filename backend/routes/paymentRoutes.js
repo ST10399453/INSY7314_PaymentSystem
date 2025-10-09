@@ -1,58 +1,67 @@
 import express from "express";
-import {validationResult} from 'express-validator';
+import bcrypt from "bcrypt";
+import { validationResult } from "express-validator";
 import { validatePayment } from "../utils/validation.js";
 import Transaction from "../models/Transaction.js";
 import verifyToken from "../middleware/verifyToken.js";
 
 const router = express.Router();
+const saltRounds = 12;
 
-// Middleware to check if the user is authenticated
-// const isAuthenticated = (req, res, next) => {
-//     if (req.userId){
-//         next();
-//     }
-//     else{
-//         return res.status(401).json({message: 'Authentication required to make payment.'});
-//     }
-// };
+// ---------- Submit International Payment ----------
+router.post("/submit", verifyToken, validatePayment, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
-// API function: handle new international payment transaction
-router.post("/submit", verifyToken, validatePayment, async(req, res) =>{
-    // Check for validation errors
-    const errors = validationResult(req);
-    if(!errors.isEmpty()){
-        // Reject requests if whitelisting fails
-        return res.status(400).json({errors: errors.array()});
-    }
+  try {
+    const { amount, currency, recipientAccount, swiftCode } = req.body;
+    const userId = req.userId;
 
-    try{
-        // Destructure whitelisted data from the request body
-        const {amount, currency, recipientAccount, swiftCode} = req.body;
+    // Hash only the string fields (not amount)
+    const [hashedRecipientAccount, hashedSwiftCode] = await Promise.all([
+      bcrypt.hash(recipientAccount, saltRounds),
+      bcrypt.hash(swiftCode, saltRounds),
+    ]);
 
-       // const userId = req.userId || '60c72b2f9f1b4c001f34d19d';
-        const userId = req.userId;
+    const newTransaction = new Transaction({
+      userId,
+      amount: Number(amount),
+      currency,
+      recipientAccount: hashedRecipientAccount,
+      swiftCode: hashedSwiftCode,
+    });
 
-        // Create and save the new transaction to the secured database
-        const newTransaction = new Transaction({
-            userId,
-            amount,
-            currency,
-            recipientAccount,
-            swiftCode
-        });
+    await newTransaction.save();
 
-        await newTransaction.save();
+    return res.status(201).json({
+      message: "Transaction stored successfully. Pending employee verification.",
+      transactionId: newTransaction._id,
+    });
+  } catch (err) {
+    console.error("Payment submission error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
 
-        // Respond with success
-        res.status(201).json({
-            message: "Transaction stored successfully. Pending employee verification.",
-            transaction: newTransaction
-        });
-    }
-    catch (err){
-        // 500 status for server/database errorss
-        res.status(500).json({error: err.message});
-    }
+
+// ---------- Get All Transactions for Logged-in User ----------
+router.get("/transactions", verifyToken, async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    // Fetch only date, amount, and currency; newest first
+    const transactions = await Transaction.find({ userId })
+      .select("createdAt amount currency")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      message: "Transactions retrieved successfully.",
+      transactions,
+    });
+  } catch (err) {
+    console.error("Error fetching transactions:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 export default router;
