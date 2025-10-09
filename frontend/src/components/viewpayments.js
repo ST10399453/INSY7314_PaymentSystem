@@ -34,7 +34,7 @@ export default function ViewPayments() {
   if (transactions.length === 0) return <p>No transactions found.</p>;
 
   return (
-    <div>
+    <div className="form-container transactions-container">
       <h2>My Transactions</h2>
       <table>
         <thead>

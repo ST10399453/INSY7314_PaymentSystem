@@ -45,7 +45,7 @@ function Home() {
           <Link to="/payment">
             <button className="btn login-btn">Make Payment</button>
           </Link>
-          <Link to="/viewpayments">
+          <Link to="/logout">
             <button className="btn signup-btn">Vp</button>
           </Link>
         </div>
