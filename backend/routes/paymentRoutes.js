@@ -2,21 +2,22 @@ import express from "express";
 import {validationResult} from 'express-validator';
 import { validatePayment } from "../utils/validation.js";
 import Transaction from "../models/Transaction.js";
+import verifyToken from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
 // Middleware to check if the user is authenticated
-const isAuthenticated = (req, res, next) => {
-    if (req.userId){
-        next();
-    }
-    else{
-        return res.status(401).json({message: 'Authentication required to make payment.'});
-    }
-};
+// const isAuthenticated = (req, res, next) => {
+//     if (req.userId){
+//         next();
+//     }
+//     else{
+//         return res.status(401).json({message: 'Authentication required to make payment.'});
+//     }
+// };
 
 // API function: handle new international payment transaction
-router.post("/submit", isAuthenticated, validatePayment, async(req, res) =>{
+router.post("/submit", verifyToken, validatePayment, async(req, res) =>{
     // Check for validation errors
     const errors = validationResult(req);
     if(!errors.isEmpty()){
