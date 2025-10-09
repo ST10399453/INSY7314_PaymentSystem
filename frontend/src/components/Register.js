@@ -57,115 +57,158 @@ function Register() {
   }
 
   return (
-    <div className="form-container">
-      <h2>Signup</h2>
-      <form onSubmit={handleRegister}>
-        <div className="form-group">
-          <label>
-            Full Name:
-            <span className="tooltip" data-tooltip="Enter your legal full name as it appears on your ID">
-              ⓘ
-            </span>
-          </label>
-          <input
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullname(e.target.value)}
-            className={fieldErrors.fullName ? "error" : ""}
-            placeholder="e.g., John Smith"
-            required
-          />
-          <ErrorMessage errors={fieldErrors.fullName} />
+    <div className="register-page">
+      <div className="register-container">
+        <div className="register-header">
+          <div className="register-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <line x1="19" y1="8" x2="19" y2="14" />
+              <line x1="22" y1="11" x2="16" y2="11" />
+            </svg>
+          </div>
+          <h2>Create Your Account</h2>
+          <p className="register-subtitle">Join us today and start managing your payments securely</p>
         </div>
 
-        <div className="form-group">
-          <label>
-            Username:
-            <span
-              className="tooltip"
-              data-tooltip="Choose a unique username (4-20 characters, letters and numbers only)"
-            >
-              ⓘ
-            </span>
-          </label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className={fieldErrors.username ? "error" : ""}
-            placeholder="e.g., john123"
-            required
-          />
-          <ErrorMessage errors={fieldErrors.username} />
+        <form onSubmit={handleRegister} className="register-form">
+          <div className="form-row">
+            <div className="form-group">
+              <label>
+                <span className="label-text">Full Name</span>
+                <span className="tooltip" data-tooltip="Enter your legal full name as it appears on your ID">
+                  ⓘ
+                </span>
+              </label>
+              <div className="input-wrapper">
+                <input
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullname(e.target.value)}
+                  className={fieldErrors.fullName ? "error" : ""}
+                  placeholder="John Smith"
+                  required
+                />
+              </div>
+              <ErrorMessage errors={fieldErrors.fullName} />
+            </div>
+
+            <div className="form-group">
+              <label>
+                <span className="label-text">Username</span>
+                <span
+                  className="tooltip"
+                  data-tooltip="Choose a unique username (4-20 characters, letters and numbers only)"
+                >                  ⓘ
+                </span>
+              </label>
+              <div className="input-wrapper">
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className={fieldErrors.username ? "error" : ""}
+                  placeholder="john123"
+                  required
+                />
+              </div>
+              <ErrorMessage errors={fieldErrors.username} />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>
+                <span className="label-text">ID Number</span>
+                <span className="tooltip" data-tooltip="Your 13-digit national ID number">
+                  ⓘ
+                </span>
+              </label>
+              <div className="input-wrapper">
+                <input
+                  type="text"
+                  value={idNumber}
+                  onChange={(e) => setIdNumber(e.target.value)}
+                  className={fieldErrors.idNumber ? "error" : ""}
+                  placeholder="1234567890123"
+                  maxLength="13"
+                  required
+                />
+              </div>
+              <ErrorMessage errors={fieldErrors.idNumber} />
+            </div>
+
+            <div className="form-group">
+              <label>
+                <span className="label-text">Account Number</span>
+                <span className="tooltip" data-tooltip="Your bank account number (10-16 digits)">
+                                    ⓘ
+                </span>
+              </label>
+              <div className="input-wrapper">
+                <input
+                  type="text"
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value)}
+                  className={fieldErrors.accountNumber ? "error" : ""}
+                  placeholder="1234567890"
+                  maxLength="16"
+                  required
+                />
+              </div>
+              <ErrorMessage errors={fieldErrors.accountNumber} />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>
+              <span className="label-text">Password</span>
+              <span className="tooltip" data-tooltip="Minimum 8 characters with uppercase, lowercase, and numbers">
+                  ⓘ
+              </span>
+            </label>
+            <div className="input-wrapper">
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={fieldErrors.password ? "error" : ""}
+                placeholder="Enter a strong password"
+                required
+              />
+            </div>
+            <ErrorMessage errors={fieldErrors.password} />
+          </div>
+
+          <button type="submit" className="submit-btn">
+            <span>Create Account</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
+        </form>
+
+        <ErrorMessage errors={fieldErrors.general} />
+        <SuccessMessage message={successMessage} />
+
+        <div className="register-footer">
+          <p>
+            Already have an account?{" "}
+            <a href="/login" className="login-link">
+              Sign in here
+            </a>
+          </p>
         </div>
 
-        <div className="form-group">
-          <label>
-            ID Number:
-            <span className="tooltip" data-tooltip="Your 13-digit national ID number">
-              ⓘ
-            </span>
-          </label>
-          <input
-            type="text"
-            value={idNumber}
-            onChange={(e) => setIdNumber(e.target.value)}
-            className={fieldErrors.idNumber ? "error" : ""}
-            placeholder="e.g., 1234567890123"
-            maxLength="13"
-            required
-          />
-          <ErrorMessage errors={fieldErrors.idNumber} />
+        <div className="security-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          <span>Your information is secure and encrypted</span>
         </div>
-
-        <div className="form-group">
-          <label>
-            Account Number:
-            <span className="tooltip" data-tooltip="Your bank account number (10-16 digits)">
-              ⓘ
-            </span>
-          </label>
-          <input
-            type="text"
-            value={accountNumber}
-            onChange={(e) => setAccountNumber(e.target.value)}
-            className={fieldErrors.accountNumber ? "error" : ""}
-            placeholder="e.g., 1234567890"
-            maxLength="16"
-            required
-          />
-          <ErrorMessage errors={fieldErrors.accountNumber} />
-        </div>
-
-        <div className="form-group">
-          <label>
-            Password:
-            <span className="tooltip" data-tooltip="Minimum 8 characters with uppercase, lowercase, and numbers">
-              ⓘ
-            </span>
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={fieldErrors.password ? "error" : ""}
-            placeholder="Enter a strong password"
-            required
-          />
-          <ErrorMessage errors={fieldErrors.password} />
-        </div>
-
-        <button type="submit" className="submit-btn">
-          Create Account
-        </button>
-      </form>
-
-      <ErrorMessage errors={fieldErrors.general} />
-      <SuccessMessage message={successMessage} />
-
-      <p>
-        Already have an account? <a href="/login">Login</a>
-      </p>
+      </div>
     </div>
   )
 }
