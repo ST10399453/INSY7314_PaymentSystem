@@ -1,17 +1,22 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+"use client"
+
+import { useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 
 export default function Logout() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   useEffect(() => {
-    // remove anything auth-related you stored
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    // optionally clear other app state keys too
+    // Remove authentication data
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    
+    // Dispatch custom event to update Navbar
+    window.dispatchEvent(new Event("authChange"))
 
-    navigate("/login", { replace: true });
-  }, [navigate]);
+    // Redirect to login page
+    navigate("/login", { replace: true })
+  }, [navigate])
 
-  return null; // nothing to render
+  return null
 }

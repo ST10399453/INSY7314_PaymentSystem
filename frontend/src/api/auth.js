@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios from "axios"
 
-const API_URL = "https://localhost:5000/api/auth";
+const API_URL = "https://localhost:5000/api/auth"
 
 // REGISTER user
 export const signup = async (username, fullName, idNumber, accountNumber, password) => {
@@ -11,12 +11,12 @@ export const signup = async (username, fullName, idNumber, accountNumber, passwo
       idNumber,
       accountNumber,
       password,
-    });
-    return response.data;
+    })
+    return response.data
   } catch (error) {
-    throw error.response?.data || { message: "Signup failed" };
+    throw error.response?.data || { message: "Signup failed" }
   }
-};
+}
 
 // LOGIN user
 export const login = async (username, password) => {
@@ -24,9 +24,9 @@ export const login = async (username, password) => {
     const response = await axios.post(`${API_URL}/login`, {
       username,
       password,
-    });
-    return response.data;
+    })
+    return response.data
   } catch (error) {
-    throw error.response?.data || { message: "Login failed" };
+    throw error.response?.data || { message: "Login failed" }
   }
-};
+}

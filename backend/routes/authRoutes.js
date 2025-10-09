@@ -1,4 +1,3 @@
-// backend/routes/authRoutes.js
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -9,7 +8,7 @@ import { validateRegistration, validateLogin } from "../utils/validation.js";
 const router = express.Router();
 const saltRounds = 12;
 
-// ---------- Sign Up (Mongoose) ----------
+// ---------- Sign Up ----------
 router.post("/signup", validateRegistration, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -17,34 +16,44 @@ router.post("/signup", validateRegistration, async (req, res) => {
   try {
     const { fullName, idNumber, accountNumber, username, password } = req.body;
 
-    // username duplicate
-    if (await User.findOne({ username })) {
+    // Username must be unique
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
       return res.status(400).json({ message: "Username already exists" });
     }
 
-    // hash for duplicate checks + storage
-    const [idNumberHash, accountNumberHash] = await Promise.all([
+    // Compare against existing hashed idNumber/accountNumber using bcrypt
+    const allUsers = await User.find({}, { idNumber: 1, accountNumber: 1 }).lean();
+
+    for (const u of allUsers) {
+      if (u.idNumber) {
+        const idMatch = await bcrypt.compare(idNumber, u.idNumber);
+        if (idMatch) {
+          return res.status(400).json({ message: "ID number already in use" });
+        }
+      }
+      if (u.accountNumber) {
+        const accMatch = await bcrypt.compare(accountNumber, u.accountNumber);
+        if (accMatch) {
+          return res.status(400).json({ message: "Account number already in use" });
+        }
+      }
+    }
+
+    // Hash sensitive values
+    const [hashedPassword, hashedIdNumber, hashedAccountNumber] = await Promise.all([
+      bcrypt.hash(password, saltRounds),
       bcrypt.hash(idNumber, saltRounds),
       bcrypt.hash(accountNumber, saltRounds),
     ]);
 
-    // duplicates by hash
-    if (await User.findOne({ idNumberHash })) {
-      return res.status(400).json({ message: "ID number already in use" });
-    }
-    if (await User.findOne({ accountNumberHash })) {
-      return res.status(400).json({ message: "Account number already in use" });
-    }
-
-    // hash password
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
+    // Save user
     const newUser = new User({
       username,
       fullName,
-      idNumber,
-      accountNumber,
       password: hashedPassword,
+      idNumber: hashedIdNumber,
+      accountNumber: hashedAccountNumber,
     });
 
     await newUser.save();
@@ -55,25 +64,32 @@ router.post("/signup", validateRegistration, async (req, res) => {
     });
   } catch (err) {
     console.error("Signup error:", err);
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// ---------- Login: returns JWT ----------
+// ---------- Login  ----------
 router.post("/login", validateLogin, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
   try {
     const { username, password } = req.body;
-    if (!username || !password)
+    if (!username || !password) {
       return res.status(400).json({ message: "Username and password are required" });
+    }
 
     const user = await User.findOne({ username });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      // Generic message
+      return res.status(401).json({ message: "Invalid username or password" });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: "Invalid password" });
+    if (!isMatch) {
+      // generic message for wrong password
+      return res.status(401).json({ message: "Invalid username or password" });
+    }
 
     const token = jwt.sign(
       { userId: user._id, username: user.username },
@@ -88,7 +104,7 @@ router.post("/login", validateLogin, async (req, res) => {
     });
   } catch (err) {
     console.error("Login error:", err);
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
