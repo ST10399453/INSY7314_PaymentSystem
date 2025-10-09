@@ -111,20 +111,22 @@
   margin-bottom: 8px;
   font-weight: 600;
   color: #333;
-  font-size: 14px;
+  font-size: 17px;
   position: relative;
 }
 
 /* Tooltip Styling */
 .tooltip {
+  font-size: 17px; /* try 18px or 20px for larger icons */
+  color: #2ecc71;
+  margin-left: 8px;
+  cursor: help;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  cursor: help;
-  color: #2ecc71;
-  position: relative;
   transition: all 0.3s ease;
 }
+
 
 .tooltip:hover {
   transform: scale(1.1);

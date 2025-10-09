@@ -78,10 +78,7 @@ function Register() {
               <label>
                 <span className="label-text">Full Name</span>
                 <span className="tooltip" data-tooltip="Enter your legal full name as it appears on your ID">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 16v-4M12 8h.01" />
-                  </svg>
+                  ⓘ
                 </span>
               </label>
               <div className="input-wrapper">
@@ -103,11 +100,7 @@ function Register() {
                 <span
                   className="tooltip"
                   data-tooltip="Choose a unique username (4-20 characters, letters and numbers only)"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 16v-4M12 8h.01" />
-                  </svg>
+                >                  ⓘ
                 </span>
               </label>
               <div className="input-wrapper">
@@ -129,10 +122,7 @@ function Register() {
               <label>
                 <span className="label-text">ID Number</span>
                 <span className="tooltip" data-tooltip="Your 13-digit national ID number">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 16v-4M12 8h.01" />
-                  </svg>
+                  ⓘ
                 </span>
               </label>
               <div className="input-wrapper">
@@ -153,10 +143,7 @@ function Register() {
               <label>
                 <span className="label-text">Account Number</span>
                 <span className="tooltip" data-tooltip="Your bank account number (10-16 digits)">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 16v-4M12 8h.01" />
-                  </svg>
+                                    ⓘ
                 </span>
               </label>
               <div className="input-wrapper">
@@ -178,10 +165,7 @@ function Register() {
             <label>
               <span className="label-text">Password</span>
               <span className="tooltip" data-tooltip="Minimum 8 characters with uppercase, lowercase, and numbers">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 16v-4M12 8h.01" />
-                </svg>
+                  ⓘ
               </span>
             </label>
             <div className="input-wrapper">
