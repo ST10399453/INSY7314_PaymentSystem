@@ -5,6 +5,7 @@ import Home from "./components/Home"
 import PaymentForm from "./components/PaymentForm"
 import Logout from "./components/Logout"
 import Navbar from "./components/Navbar"
+import ViewPayments from "./components/viewpayments"
 import "./App.css"
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/payment" element={<PaymentForm />} />
         <Route path="/logout" element={<Logout />} />
+        <Route path="/viewpayments" element={<ViewPayments />} />
       </Routes>
     </Router>
   )

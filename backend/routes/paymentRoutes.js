@@ -51,8 +51,8 @@ router.get("/transactions", verifyToken, async (req, res) => {
 
     // Fetch only date, amount, and currency; newest first
     const transactions = await Transaction.find({ userId })
-      .select("createdAt amount currency")
-      .sort({ createdAt: -1 });
+      .select("transactionDate amount currency")
+      .sort({transactionDate: -1 });
 
     return res.status(200).json({
       message: "Transactions retrieved successfully.",
