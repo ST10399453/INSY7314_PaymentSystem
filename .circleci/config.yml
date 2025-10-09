@@ -1,0 +1,201 @@
+version: 2.1
+
+executors:
+  node_lts:
+    docker:
+      - image: cimg/node:20.12
+    working_directory: ~/project
+
+commands:
+  install_packages:
+    description: "Install npm packages with cache for a sub-project"
+    parameters:
+      app_dir:
+        type: string
+      lock_file:
+        type: string
+    steps:
+      - restore_cache:
+          name: Restore << parameters.app_dir >> cache
+          keys:
+            - v3-{{ arch }}-node-<< parameters.app_dir >>-{{ checksum "<< parameters.lock_file >>" }}
+            - v3-{{ arch }}-node-<< parameters.app_dir >>-
+      - run:
+          name: npm ci (<< parameters.app_dir >>)
+          working_directory: << parameters.app_dir >>
+          command: npm ci
+      - save_cache:
+          name: Save << parameters.app_dir >> cache
+          key: v3-{{ arch }}-node-<< parameters.app_dir >>-{{ checksum "<< parameters.lock_file >>" }}
+          paths:
+            - << parameters.app_dir >>/node_modules
+
+  run_lint:
+    parameters:
+      app_dir:
+        type: string
+    steps:
+      - run:
+          name: Lint (<< parameters.app_dir >>)
+          working_directory: << parameters.app_dir >>
+          command: |
+            if npm run | grep -q " lint"; then npm run lint; else echo "No lint script; skipping"; fi
+
+  run_tests:
+    parameters:
+      app_dir:
+        type: string
+    steps:
+      - run:
+          name: Test (<< parameters.app_dir >>)
+          working_directory: << parameters.app_dir >>
+          environment:
+            CI: true
+          command: |
+            mkdir -p test-results coverage || true
+            if npm run | grep -q " test"; then npm run test -- --coverage || npm run test; else echo "No test script; skipping"; fi
+      - store_test_results:
+          path: << parameters.app_dir >>/test-results
+      - store_artifacts:
+          path: << parameters.app_dir >>/coverage
+
+  run_build:
+    parameters:
+      app_dir:
+        type: string
+      artifact_path:
+        type: string
+    steps:
+      - run:
+          name: Build (<< parameters.app_dir >>)
+          working_directory: << parameters.app_dir >>
+          command: |
+            if npm run | grep -q " build"; then npm run build; else echo "No build script; skipping"; fi
+      - store_artifacts:
+          path: << parameters.artifact_path >>
+
+  run_sonarqube_scan:
+    description: "Run SonarQube analysis for security.js regex whitelisting and general code quality"
+    parameters:
+      app_dir:
+        type: string
+    steps:
+      - run:
+          name: SonarQube scan (<< parameters.app_dir >>)
+          working_directory: << parameters.app_dir >>
+          command: |
+            if [ -f sonar-project.properties ]; then
+              echo "Running SonarQube scanner for << parameters.app_dir >>..."
+              npx sonar-scanner \
+                -Dsonar.projectBaseDir=<< parameters.app_dir >> \
+                -Dsonar.sources=. \
+                -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+                -Dsonar.exclusions=node_modules/**,build/**,dist/** \
+                -Dsonar.verbose=true
+            else
+              echo "No sonar-project.properties found in << parameters.app_dir >>; skipping SonarQube scan.";
+            fi
+
+jobs:
+  checkout_and_install:
+    executor: node_lts
+    steps:
+      - checkout
+      - install_packages:
+          app_dir: frontend
+          lock_file: frontend/package-lock.json
+      - install_packages:
+          app_dir: backend
+          lock_file: backend/package-lock.json
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
+
+  lint_frontend:
+    executor: node_lts
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run_lint:
+          app_dir: frontend
+
+  test_frontend:
+    executor: node_lts
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run_tests:
+          app_dir: frontend
+
+  build_frontend:
+    executor: node_lts
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run_build:
+          app_dir: frontend
+          artifact_path: frontend/build
+
+  sonar_frontend:
+    executor: node_lts
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run_sonarqube_scan:
+          app_dir: frontend
+
+  lint_backend:
+    executor: node_lts
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run_lint:
+          app_dir: backend
+
+  test_backend:
+    executor: node_lts
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run_tests:
+          app_dir: backend
+
+  build_backend:
+    executor: node_lts
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run_build:
+          app_dir: backend
+          artifact_path: backend/dist
+
+  sonar_backend:
+    executor: node_lts
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run_sonarqube_scan:
+          app_dir: backend
+
+workflows:
+  version: 2
+  ci:
+    jobs:
+      - checkout_and_install
+      - lint_frontend:
+          requires: [checkout_and_install]
+      - test_frontend:
+          requires: [checkout_and_install]
+      - lint_backend:
+          requires: [checkout_and_install]
+      - test_backend:
+          requires: [checkout_and_install]
+      - build_frontend:
+          requires: [lint_frontend, test_frontend]
+      - build_backend:
+          requires: [lint_backend, test_backend]
+      - sonar_frontend:
+          requires: [build_frontend]
+      - sonar_backend:
+          requires: [build_backend]
