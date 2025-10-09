@@ -56,6 +56,9 @@ function Navbar() {
               <Link to="/payment">Payment</Link>
             </li>
             <li>
+              <Link to="/viewpayments">View Payments</Link>
+            </li>
+            <li>
               <Link to="/logout">Logout</Link>
             </li>
           </>
