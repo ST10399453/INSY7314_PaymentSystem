@@ -37,7 +37,7 @@ function Home() {
                   Get Started Free
                 </Link>
                 <Link to="/login" className="btn btn-secondary">
-                  Sign In
+                  Log In
                 </Link>
               </>
             )}

@@ -19,56 +19,122 @@ main {
 }
 
 /* ---------- Navbar Styles ---------- */
+/* ---------- Navbar Styles ---------- */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #222;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
   color: white;
-  padding: 0.8rem 2rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  padding: 1rem 2.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   position: sticky;
   top: 0;
   z-index: 100;
+  border-bottom: 2px solid rgba(46, 204, 113, 0.3);
 }
 
 .logo {
-  font-weight: bold;
-  font-size: 1.5rem;
+  font-weight: 700;
+  font-size: 1.75rem;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+  filter: brightness(1.2);
 }
 
 .nav-links {
   list-style: none;
   display: flex;
-  gap: 1.5rem;
+  gap: 2rem;
   margin: 0;
   padding: 0;
+  align-items: center;
+}
+
+.nav-links li {
+  position: relative;
 }
 
 .nav-links a {
   text-decoration: none;
-  color: white;
+  color: #e0e0e0;
   font-weight: 500;
-  transition: color 0.3s ease;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  position: relative;
 }
 
-/* ---------- Global Styles ---------- */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #2ecc71, #27ae60);
+  transition: width 0.3s ease;
+}
 
 .nav-links a:hover {
-  color: #2ECC71;
+  color: #2ecc71;
+  background-color: rgba(46, 204, 113, 0.1);
 }
 
-/* ---------- Home Page Styles ---------- */
-
-.login-btn {
-  background-color: #2ECC71;
-  color: #222;
+.nav-links a:hover::after {
+  width: 80%;
 }
 
-.login-btn:hover {
-  background-color: #00e070;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 255, 127, 0.3);
+/* Active link style */
+.nav-links a.active {
+  color: #2ecc71;
+  background-color: rgba(46, 204, 113, 0.15);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem 1.5rem;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+  }
+
+  .nav-links {
+    gap: 1rem;
+  }
+
+  .nav-links a {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
 }
 
 /* ---------- Form Styles (Login/Register) ---------- */
