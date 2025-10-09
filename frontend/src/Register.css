@@ -33,26 +33,21 @@ label {
 }
 
 /* Added tooltip styling */
-.tooltip {
-  position: relative;
-  display: inline-flex;
+label {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  background-color: #00c4ff;
-  color: white;
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: help;
-  transition: background-color 0.2s ease;
+  gap: 6px; /* spacing between text and icon */
 }
 
-.tooltip:hover {
-  background-color: #0099cc;
+.tooltip {
+  color: #2ECC71; /* your green */
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: 1rem; /* adjust size */
+  position: relative;
 }
 
+/* Tooltip popup styling */
 .tooltip::after {
   content: attr(data-tooltip);
   position: absolute;
@@ -60,36 +55,20 @@ label {
   left: 50%;
   transform: translateX(-50%);
   background-color: #333;
-  color: white;
-  padding: 8px 12px;
+  color: #fff;
+  padding: 6px 8px;
   border-radius: 6px;
-  font-size: 13px;
-  font-weight: normal;
+  font-size: 0.8rem;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.2s ease-in-out;
 }
 
-.tooltip::before {
-  content: "";
-  position: absolute;
-  bottom: 115%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-top-color: #333;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.tooltip:hover::after,
-.tooltip:hover::before {
+.tooltip:hover::after {
   opacity: 1;
 }
+
 
 input[type="text"],
 input[type="password"] {
@@ -103,7 +82,7 @@ input[type="password"] {
 
 input[type="text"]:focus,
 input[type="password"]:focus {
-  border-color: #00c4ff;
+  border-color: #2ECC71;
   box-shadow: 0 0 0 3px rgba(0, 196, 255, 0.1);
   outline: none;
 }
@@ -171,11 +150,11 @@ input.success:focus {
   color: #444;
 }
 
-.form-container a {
+/* .form-container a {
   color: #00c4ff;
   text-decoration: none;
   font-weight: 600;
-}
+} */
 
 .form-container a:hover {
   text-decoration: underline;

@@ -133,8 +133,8 @@ function PaymentForm() {
         <div className="form-group">
           <label>
             Amount:
-            <span className="tooltip-icon" title="Enter the payment amount with up to 2 decimal places">
-              ℹ️
+            <span className="tooltip" data-tooltip="Enter the payment amount with up to 2 decimal places">
+              ⓘ
             </span>
           </label>
           <input
@@ -153,8 +153,8 @@ function PaymentForm() {
         <div className="form-group">
           <label>
             Currency:
-            <span className="tooltip-icon" title="Select the currency for your payment">
-              ℹ️
+            <span className="tooltip" data-tooltip="Select the currency for your payment">
+              ⓘ
             </span>
           </label>
           <select
@@ -180,8 +180,8 @@ function PaymentForm() {
         <div className="form-group">
           <label>
             Recipient Account Number:
-            <span className="tooltip-icon" title="6-20 digit account number">
-              ℹ️
+            <span className="tooltip" data-tooltip="6-20 digit account number">
+              ⓘ
             </span>
           </label>
           <input
@@ -206,8 +206,8 @@ function PaymentForm() {
         <div className="form-group">
           <label>
             SWIFT Code:
-            <span className="tooltip-icon" title="8 or 11 character bank identifier code">
-              ℹ️
+            <span className="tooltip" data-tooltip="8 or 11 character bank identifier code">
+                    ⓘ
             </span>
           </label>
           <input

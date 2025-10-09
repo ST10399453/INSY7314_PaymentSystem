@@ -49,36 +49,3 @@
 .payment-form .submit-btn:hover {
   background-color: #15803d;
 }
-
-.transactions-container {
-  max-width: 480px;
-  margin: 40px auto;
-  font-family: Arial, sans-serif;
-}
-
-.transactions-container h2 {
-  color: #222;
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
-}
-
-.transactions-container table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-.transactions-container th,
-.transactions-container td {
-  border: 1px solid #ccc;
-  padding: 8px 10px;
-  text-align: left;
-}
-
-.transactions-container th {
-  background-color: #f0f0f0;
-}
-
-.transactions-container tr:nth-child(even) {
-  background-color: #fafafa;
-}
