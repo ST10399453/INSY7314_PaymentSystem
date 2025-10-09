@@ -17,6 +17,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
     "express-validator": "^7.2.1",
     "fs": "^0.0.1-security",
     "helmet": "^8.1.0",
@@ -24,6 +25,7 @@
     "https": "^1.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.20.0",
+    "mongoose": "^8.19.1",
     "xss": "^1.0.15"
   },
   "devDependencies": {
