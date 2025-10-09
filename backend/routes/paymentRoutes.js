@@ -29,6 +29,7 @@ router.post("/submit", isAuthenticated, validatePayment, async(req, res) =>{
         const {amount, currency, recipientAccount, swiftCode} = req.body;
 
        // const userId = req.userId || '60c72b2f9f1b4c001f34d19d';
+        const userId = req.userId;
 
         // Create and save the new transaction to the secured database
         const newTransaction = new Transaction({

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Use http for local dev unless you have a localhost certificate set up
-const PAYMENT_API_URL = "http://localhost:5000/api/payment";
+const PAYMENT_API_URL = "https://localhost:5000/api/payments";
 
 // SEND international payment
 export const sendPayment = async (paymentData, token) => {

@@ -14,7 +14,9 @@ const ACCOUNT_NUMBER_REGEX = /^\d{6,12}$/;
 const USERNAME_REGEX = /^[a-zA-Z0-9]{4,20}$/;
 
 // Password: At least 8 characters, with uppercase, lowercase, number, and symbol
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/;
+
+    // [@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 // Payment amount: Numeric
 const AMOUNT_REGEX = /^\d+(\.\d{1,2})?$/;
