@@ -1,55 +1,48 @@
 "use client"
 
-import { useEffect } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
+import "../Home.css"
 
 function Home() {
-  const navigate = useNavigate()
-
-  const isTokenExpired = (token) => {
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1] || ""))
-      if (!payload.exp) return false
-      const nowSec = Math.floor(Date.now() / 1000)
-      return payload.exp <= nowSec
-    } catch {
-      return true // invalid token or not JWT
-    }
-  }
-
-  useEffect(() => {
-    const token = localStorage.getItem("token")
-
-    // if not logged in
-    if (!token) {
-      navigate("/login", { replace: true })
-      return
-    }
-
-    // if JWT expired
-    if (isTokenExpired(token)) {
-      localStorage.removeItem("token")
-      localStorage.removeItem("user")
-      window.dispatchEvent(new Event("authChange"))
-      navigate("/login", { replace: true })
-    }
-  }, [navigate])
-
   return (
     <div className="home-container">
-      <div className="home-card">
-        <h1>Welcome to the International Payment Portal</h1>
-        <p>Secure and seamless international transactions.</p>
-
-        <div className="home-buttons">
-          <Link to="/payment">
-            <button className="btn login-btn">Make Payment</button>
-          </Link>
-          <Link to="/logout">
-            <button className="btn signup-btn">Vp</button>
-          </Link>
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="hero-content">
+          <h1 className="hero-title">
+            Send Money Globally with <span className="highlight">Confidence</span>
+          </h1>
+          <p className="hero-subtitle">
+            Fast, secure international payments to over 180 countries.
+          </p>
+          <div className="hero-buttons">
+            <Link to="/payment" className="btn btn-primary">
+              Make a Payment
+            </Link>
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="features-section">
+        <div className="features-grid">
+          <div className="feature-card">
+            <div className="feature-icon">🔒</div>
+            <h3>Secure</h3>
+            <p>Bank-level encryption protects every transaction</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">⚡</div>
+            <h3>Fast</h3>
+            <p>Send money in minutes, not days</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">🌍</div>
+            <h3>Global</h3>
+            <p>Transfer to 180+ countries worldwide</p>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

@@ -31,9 +31,9 @@
   background-color: #fef2f2;
 }
 
-.payment-form input[type="number"] {
+/* .payment-form input[type="number"] {
   -moz-appearance: textfield;
-}
+} */
 
 .payment-form input[type="number"]::-webkit-outer-spin-button,
 .payment-form input[type="number"]::-webkit-inner-spin-button {
