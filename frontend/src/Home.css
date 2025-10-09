@@ -5,7 +5,7 @@
 .hero-section {
   padding: 80px 20px;
   text-align: center;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: #dff5e7;
 }
 
 .hero-content {
@@ -66,12 +66,12 @@
 }
 
 .btn-secondary {
-  background-color: #6c757d;
+  background-color:  #99a1a8;
   color: white;
 }
 
 .btn-secondary:hover {
-  background-color: #5a6268;
+  background-color: #808992;
   box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
   transform: translateY(-2px);
 }
@@ -93,7 +93,7 @@
   text-align: center;
   padding: 30px;
   border-radius: 8px;
-  background: #f8f9fa;
+  background: #dff5e7;
   transition: all 0.3s ease;
 }
 

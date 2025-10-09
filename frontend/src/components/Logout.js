@@ -15,7 +15,7 @@ export default function Logout() {
     window.dispatchEvent(new Event("authChange"))
 
     // Redirect to login page
-    navigate("/login", { replace: true })
+    navigate("/home", { replace: true })
   }, [navigate])
 
   return null
