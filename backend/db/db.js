@@ -8,9 +8,9 @@ async function connect() {
     await mongoose.connect(process.env.MONGO_URI, {
       dbName: "PaymentSystem_INSY7314",
     });
-    console.log("✅ Connected to MongoDB (PaymentSystem)");
+    console.log("Connected to MongoDB (PaymentSystem)");
   } catch (err) {
-    console.error("❌ MongoDB connection failed:", err);
+    console.error("MongoDB connection failed:", err);
   }
 }
 
