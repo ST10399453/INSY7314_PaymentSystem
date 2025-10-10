@@ -148,9 +148,9 @@
   opacity: 0;
   pointer-events: none;
   transition: all 0.3s ease;
-  z-index: 10;
-  max-width: 250px;
-  white-space: normal;
+  z-index: 10;   
+  max-width: none;
+  white-space: nowrap;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
