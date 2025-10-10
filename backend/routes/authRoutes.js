@@ -19,7 +19,7 @@ router.post("/signup", validateRegistration, async (req, res) => {
     // Username must be unique
     const existingUser = await User.findOne({ username });
     if (existingUser) {
-      return res.status(400).json({ message: "Username already exists" });
+      return res.status(400).json({ message: "Account already in use" });
     }
 
     // Compare against existing hashed idNumber/accountNumber using bcrypt
@@ -29,13 +29,13 @@ router.post("/signup", validateRegistration, async (req, res) => {
       if (u.idNumber) {
         const idMatch = await bcrypt.compare(idNumber, u.idNumber);
         if (idMatch) {
-          return res.status(400).json({ message: "ID number already in use" });
+          return res.status(400).json({ message: "Account already in use" });
         }
       }
       if (u.accountNumber) {
         const accMatch = await bcrypt.compare(accountNumber, u.accountNumber);
         if (accMatch) {
-          return res.status(400).json({ message: "Account number already in use" });
+          return res.status(400).json({ message: "Account already in use" });
         }
       }
     }
@@ -74,19 +74,25 @@ router.post("/login", validateLogin, async (req, res) => {
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
   try {
-    const { username, password } = req.body;
-    if (!username || !password) {
-      return res.status(400).json({ message: "Username and password are required" });
+    const { username, accountNumber, password } = req.body;
+    if (!username || !password || !accountNumber) {
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     const user = await User.findOne({ username });
     if (!user) {
       // Generic message
-      return res.status(401).json({ message: "Invalid username or password" });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
+    const isMatchAccount = await bcrypt.compare(accountNumber, user.accountNumber);
+    if (!isMatchAccount) {
+      // generic message for wrong password
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const isMatchPassword = await bcrypt.compare(password, user.password);
+    if (!isMatchPassword) {
       // generic message for wrong password
       return res.status(401).json({ message: "Invalid username or password" });
     }

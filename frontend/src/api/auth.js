@@ -19,11 +19,12 @@ export const signup = async (username, fullName, idNumber, accountNumber, passwo
 }
 
 // LOGIN user
-export const login = async (username, password) => {
+export const login = async (username, accountNumber, password) => {
   try {
     const response = await axios.post(`${API_URL}/login`, {
       username,
       password,
+      accountNumber
     })
     return response.data
   } catch (error) {

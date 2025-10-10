@@ -9,6 +9,7 @@ const USERNAME_REGEX = /^[a-zA-Z0-9]{4,20}$/
 
 function Login() {
   const [username, setUsername] = useState("")
+  const [accountNumber, setAccountNumber] = useState("")
   const [password, setPassword] = useState("")
   const [fieldErrors, setFieldErrors] = useState({})
   const [generalError, setGeneralError] = useState("")
@@ -37,6 +38,11 @@ function Login() {
     setFieldErrors((prev) => ({ ...prev, password: [] }))
   }
 
+  const handleAccountNumberChange =(e) =>{
+    setAccountNumber(e.target.value)
+    setFieldErrors((prev) => ({ ...prev, accountNumber: [] }))
+  }
+
   const handleLogin = async (e) => {
     e.preventDefault()
     setGeneralError("")
@@ -47,6 +53,11 @@ function Login() {
     if (!USERNAME_REGEX.test(username)) {
       errors.username = ["Username must be 4 to 20 alphanumeric characters."]
     }
+
+     if (!accountNumber) {
+      errors.accountNumber = ["Account Number is required."]
+    }
+
     if (!password) {
       errors.password = ["Password is required."]
     }
@@ -57,7 +68,7 @@ function Login() {
     }
 
     try {
-      const res = await login(username, password)
+      const res = await login(username, accountNumber, password)
 
       if (res.token) {
         localStorage.setItem("token", res.token)
@@ -117,6 +128,21 @@ function Login() {
               />
             </div>
             <ErrorMessage errors={fieldErrors.username} />
+          </div>
+
+          <div className="form-group">
+            <label>Account Number</label>
+            <div className="input-wrapper">
+              <input
+                type="text"
+                value={accountNumber}
+                onChange={handleAccountNumberChange}
+                className={fieldErrors.accountNumber?.length > 0 ? "error" : ""}
+                placeholder="Enter your account number"
+                required
+              />
+            </div>
+            <ErrorMessage errors={fieldErrors.accountNumber} />
           </div>
 
           <div className="form-group">
