@@ -49,7 +49,7 @@ In VS Code, open a new terminal (`Ctrl +` or from the top menu: `Terminal → Ne
     ```
 ## 3. Run the Frontend
 
-Open another terminal in VS Code(`+` in the terminal window)
+Open another terminal in VS Code( `+` in the terminal window)
 
 1. Navigate to the frontend folder:
     ```
