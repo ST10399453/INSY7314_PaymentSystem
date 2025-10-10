@@ -44,7 +44,7 @@ if (KEY_FILE && CERT_FILE && fs.existsSync(KEY_FILE) && fs.existsSync(CERT_FILE)
     minVersion: "TLSv1.2",
   };
   https.createServer(httpsOptions, app).listen(PORT, () => {
-    console.log(`🔐 HTTPS server running on https://localhost:${PORT}`);
+    console.log(`HTTPS server running on https://localhost:${PORT}`);
   });
 }
 
