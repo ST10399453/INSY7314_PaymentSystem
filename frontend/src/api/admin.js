@@ -1,56 +1,64 @@
-import express from "express";
-import https from "https";
-import http from "http";
-import fs from "fs";
-import dotenv from "dotenv";
-import cors from "cors";
-import connect from "./db/db.js";
-import authRoutes from "./routes/authRoutes.js";
-import paymentRoutes from "./routes/paymentRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import { applySecurity } from "./utils/security.js";
+import axios from "axios";
 
-dotenv.config();
+// Use http for local dev unless you have a localhost certificate set up
+const ADMIN_API_URL = "https://localhost:5000/api/admin";
 
-const app = express();
+const authHeaders = (token) => {
+  const h = { "Content-Type": "application/json" };
+  if (token) h.Authorization = `Bearer ${token}`;
+  return h;
+};
 
-// Limit JSON body
-app.use(express.json({ limit: "200kb" }));
-app.use(cors());
+/**
+ * List transactions for the employee portal (optional status filter).
+ * status can be: "Pending", "Verified", "Submitted to SWIFT"
+ */
+export const fetchTransactions = async (token, status) => {
+  try {
+    const response = await axios.get(`${ADMIN_API_URL}/transactions`, {
+      headers: authHeaders(token),
+      params: status ? { status } : {},
+    });
+    return response.data; // { message, transactions }
+  } catch (error) {
+    throw error.response?.data || { message: "Failed to fetch transactions" };
+  }
+};
 
-// Security middleware (helmet/hpp/ratelimit/xss/etc.)
-applySecurity(app);
+/**
+ * Mark a transaction as Verified.
+ * Only allowed for users with role=employee.
+ */
+export const verifyTransaction = async (transactionId, token) => {
+  try {
+    const response = await axios.patch(
+      `${ADMIN_API_URL}/transactions/${encodeURIComponent(transactionId)}/verify`,
+      {},
+      { headers: authHeaders(token) }
+    );
+    return response.data; // { message, id }
+  } catch (error) {
+    throw error.response?.data || { message: "Failed to verify transaction" };
+  }
+};
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/payments", paymentRoutes);
-app.use("/api/admin", adminRoutes);
+/**
+ * Submit a Verified transaction to SWIFT (state -> "Submitted to SWIFT").
+ * Only allowed for users with role=employee.
+ */
+export const submitToSwift = async (transactionId, token) => {
+  try {
+    const response = await axios.post(
+      `${ADMIN_API_URL}/transactions/${encodeURIComponent(transactionId)}/submit`,
+      {},
+      { headers: authHeaders(token) }
+    );
+    return response.data; // { message, id }
+  } catch (error) {
+    throw error.response?.data || { message: "Failed to submit to SWIFT" };
+  }
+};
 
-// Central error handler
-app.use(function (err, _req, res, _next) {
-  console.error(err);
-  res.status(err.status || 500).json({ error: "Something went wrong." });
-});
-
-// ---- DB connect BEFORE starting server ----
-await connect();
-
-const PORT = Number(process.env.PORT || 5000);
-const KEY_FILE = process.env.TLS_KEY_FILE;
-const CERT_FILE = process.env.TLS_CERT_FILE;
-
-if (KEY_FILE && CERT_FILE && fs.existsSync(KEY_FILE) && fs.existsSync(CERT_FILE)) {
-  const httpsOptions = {
-    key: fs.readFileSync(KEY_FILE),
-    cert: fs.readFileSync(CERT_FILE),
-    minVersion: "TLSv1.2",
-  };
-  https.createServer(httpsOptions, app).listen(PORT, () => {
-    console.log(`HTTPS server running on https://localhost:${PORT}`);
-  });
-}
-
-export default app;
 
 /*
 REFERENCES
@@ -66,7 +74,7 @@ BetterStack. 2022. “A Complete Guide to Timeouts in Node.js | Better Stack Com
 <https://betterstack.com/community/guides/scaling-nodejs/nodejs-timeouts/> [accessed 1 October 2025].
 
 Codino. 2022. “Secure Your Node.js App with HPP.js: A Step-By-Step Guide”. 
-December 31, 2022 <https://codino.medium.com/secure-your-node-js-app-with-hpp-js-a-step-by-step-guide-6926a9464f62> 
+December 31, 2022 <https://codino.medium.com/secure-your-node-js-a-step-by-step-guide-6926a9464f62> 
 [accessed 4 October 2025].
 
 Das, Arunangshu. 2025. “7 Best Practices for Sanitizing Input in Node.js”.

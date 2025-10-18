@@ -10,6 +10,8 @@ export default function verifyToken(req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.userId = decoded.userId;
+    req.username = decoded.username;
+    req.role = decoded.role;
     next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid or expired token" });

@@ -49,6 +49,7 @@ router.post("/signup", validateRegistration, async (req, res) => {
     const newUser = new User({
       username,
       fullName,
+      role: 'customer',
       password: hashedPassword,
       idNumber: encIdNumber,
       accountNumber: encAccountNumber,
@@ -100,7 +101,7 @@ router.post("/login", validateLogin, async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: user._id, username: user.username },
+      { userId: user._id, username: user.username, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES || "1h" }
     );
@@ -108,7 +109,7 @@ router.post("/login", validateLogin, async (req, res) => {
     return res.status(200).json({
       message: "Login successful",
       token,
-      user: { id: user._id, username: user.username, fullName: user.fullName },
+      user: { id: user._id, username: user.username, fullName: user.fullName, role: user.role },
     });
   } catch (err) {
     console.error("Login error:", err);

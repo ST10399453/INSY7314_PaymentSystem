@@ -1,32 +1,39 @@
-"use client"
+// src/components/Navbar.js
+"use client";
 
-import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 function Navbar() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [role, setRole] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if token exists in localStorage
     const checkAuth = () => {
-      const token = localStorage.getItem("token")
-      setIsAuthenticated(!!token)
-    }
+      setIsAuthenticated(Boolean(localStorage.getItem("token")));
+      setRole(localStorage.getItem("role") || "");
+    };
 
-    // Initial check
-    checkAuth()
+    // Initial read
+    checkAuth();
 
-    // Listen for storage changes (for cross-tab sync)
-    window.addEventListener("storage", checkAuth)
-
-    // Custom event for same-tab updates
-    window.addEventListener("authChange", checkAuth)
+    // Re-sync across tabs and on same-tab updates
+    const events = ["storage", "authChange", "visibilitychange", "focus"];
+    events.forEach((ev) => window.addEventListener(ev, checkAuth));
 
     return () => {
-      window.removeEventListener("storage", checkAuth)
-      window.removeEventListener("authChange", checkAuth)
-    }
-  }, [])
+      events.forEach((ev) => window.removeEventListener(ev, checkAuth));
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    // notify listeners in this tab + other tabs
+    window.dispatchEvent(new Event("authChange"));
+    navigate("/login");
+  };
 
   return (
     <nav className="navbar">
@@ -40,6 +47,7 @@ function Navbar() {
         <li>
           <Link to="/">Home</Link>
         </li>
+
         {!isAuthenticated && (
           <>
             <li>
@@ -50,19 +58,38 @@ function Navbar() {
             </li>
           </>
         )}
-        {isAuthenticated && (
+
+        {isAuthenticated && role === "customer" && (
           <>
             <li>
               <Link to="/payment">Payment</Link>
             </li>
             <li>
-              <Link to="/logout">Logout</Link>
+              <Link to="/transactions">My Transactions</Link>
+            </li>
+            <li>
+              <button onClick={handleLogout} className="link-button">
+                Logout
+              </button>
+            </li>
+          </>
+        )}
+
+        {isAuthenticated && role === "employee" && (
+          <>
+            <li>
+              <Link to="/admin/payments">View Payments</Link>
+            </li>
+            <li>
+              <button onClick={handleLogout} className="link-button">
+                Logout
+              </button>
             </li>
           </>
         )}
       </ul>
     </nav>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;

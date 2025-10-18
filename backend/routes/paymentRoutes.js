@@ -2,13 +2,15 @@ import express from "express";
 import { validationResult } from "express-validator";
 import { validatePayment } from "../utils/validation.js";
 import Transaction from "../models/Transaction.js";
+import User from "../models/User.js";
 import verifyToken from "../middleware/verifyToken.js";
-import { encrypt } from "../utils/crypto.js";
+import requireRole from "../middleware/requireRole.js";
+import { encrypt, decrypt } from "../utils/crypto.js";
 
 const router = express.Router();
 
 // ---------- Submit International Payment ----------
-router.post("/submit", verifyToken, validatePayment, async (req, res) => {
+router.post("/submit", verifyToken, requireRole("customer"), validatePayment, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
@@ -42,22 +44,153 @@ router.post("/submit", verifyToken, validatePayment, async (req, res) => {
   }
 });
 
-// ---------- Get All Transactions for Logged-in User ----------
-router.get("/transactions", verifyToken, async (req, res) => {
+// ---------- Get Transactions for Logged-in Customer ----------
+// ---------- Get All Transactions for Employees (Admin Portal) ----------
+router.get("/admin/transactions", verifyToken, requireRole("employee"), async (req, res) => {
+  try {
+    const { status } = req.query;
+    const query = {};
+    if (status) query.status = status;
+
+    const transactions = await Transaction.find(query)
+      .populate("userId", "fullName username")
+      .sort({ transactionDate: -1 })
+      .lean();
+
+    // helper: mask all digits except the last 4
+    const maskToLast4 = (value) => {
+      const s = String(value ?? "");
+      const digits = s.replace(/\D/g, ""); // digits only for masking logic
+      if (digits.length <= 4) return digits; // nothing to mask
+      const masked = "*".repeat(digits.length - 4) + digits.slice(-4);
+      return masked;
+    };
+
+    const results = transactions.map((tx) => {
+      let recipientAccountPlain, swiftCodePlain;
+      try {
+        recipientAccountPlain = decrypt(tx.recipientAccount);
+        swiftCodePlain = decrypt(tx.swiftCode);
+      } catch {
+        recipientAccountPlain = "Decryption error";
+        swiftCodePlain = "Decryption error";
+      }
+
+      // mask recipient account number to last 4 digits only
+      const maskedRecipientAccount =
+        recipientAccountPlain === "Decryption error"
+          ? recipientAccountPlain
+          : maskToLast4(recipientAccountPlain);
+
+      return {
+        id: tx._id,
+        transactionDate: tx.transactionDate,
+        amount: tx.amount,
+        currency: tx.currency,
+        status: tx.status,
+        customer: tx.userId
+          ? { name: tx.userId.fullName, username: tx.userId.username }
+          : null,
+        recipientAccount: maskedRecipientAccount,
+        swiftCode: swiftCodePlain, // leave SWIFT code as-is (not masked)
+      };
+    });
+
+    return res.status(200).json({
+      message: "All transactions retrieved successfully.",
+      transactions: results,
+    });
+  } catch (err) {
+    console.error("Admin fetch error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ---------- Get All Transaction Details for Logged-in Customer ----------
+router.get("/transactions", verifyToken, requireRole("customer"), async (req, res) => {
   try {
     const userId = req.userId;
 
-    // Fetch only date, amount, and currency; newest first
+    // Fetch all transactions by the logged-in customer
     const transactions = await Transaction.find({ userId })
-      .select("transactionDate amount currency")
-      .sort({ transactionDate: -1 });
+      .sort({ transactionDate: -1 })
+      .lean();
+
+    // Decrypt sensitive data for each transaction
+    const results = transactions.map((tx) => {
+      let recipientAccountPlain, swiftCodePlain;
+      try {
+        recipientAccountPlain = decrypt(tx.recipientAccount);
+        swiftCodePlain = decrypt(tx.swiftCode);
+      } catch {
+        recipientAccountPlain = "Decryption error";
+        swiftCodePlain = "Decryption error";
+      }
+
+      return {
+        id: tx._id,
+        transactionDate: tx.transactionDate,
+        amount: tx.amount,
+        currency: tx.currency,
+        recipientAccount: recipientAccountPlain,
+        swiftCode: swiftCodePlain,
+        status: tx.status,
+      };
+    });
 
     return res.status(200).json({
-      message: "Transactions retrieved successfully.",
-      transactions,
+      message: "Full transaction details retrieved successfully.",
+      transactions: results,
     });
   } catch (err) {
     console.error("Error fetching transactions:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+// ---------- Get All Transactions for Employees (Admin Portal) ----------
+router.get("/admin/transactions", verifyToken, requireRole("employee"), async (req, res) => {
+  try {
+    const { status } = req.query;
+    const query = {};
+    if (status) query.status = status;
+
+    const transactions = await Transaction.find(query)
+      .populate("userId", "fullName username")
+      .sort({ transactionDate: -1 })
+      .lean();
+
+    // Decrypt recipientAccount and swiftCode for employee view
+    const results = transactions.map((tx) => {
+      let recipientAccount, swiftCode;
+      try {
+        recipientAccount = decrypt(tx.recipientAccount);
+        swiftCode = decrypt(tx.swiftCode);
+      } catch {
+        recipientAccount = "Decryption error";
+        swiftCode = "Decryption error";
+      }
+      return {
+        id: tx._id,
+        transactionDate: tx.transactionDate,
+        amount: tx.amount,
+        currency: tx.currency,
+        status: tx.status,
+        customer: tx.userId
+          ? { name: tx.userId.fullName, username: tx.userId.username }
+          : null,
+        recipientAccount,
+        swiftCode,
+      };
+    });
+
+    return res.status(200).json({
+      message: "All transactions retrieved successfully.",
+      transactions: results,
+    });
+  } catch (err) {
+    console.error("Admin fetch error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
