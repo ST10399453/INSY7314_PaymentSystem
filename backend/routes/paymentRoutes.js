@@ -18,10 +18,15 @@ router.post("/submit", verifyToken, requireRole("customer"), validatePayment, as
     const { amount, currency, recipientAccount, swiftCode } = req.body;
     const userId = req.userId;
 
+    // normalize the plaintext before encrypting
+    const recipient = String(recipientAccount).trim();          // clean spacing etc.
+    const swift = String(swiftCode).trim().toUpperCase();       // ensure consistent format
+
+
     // Encrypt sensitive string fields with AES-256-GCM
     const [encRecipientAccount, encSwiftCode] = await Promise.all([
-      encrypt(recipientAccount),
-      encrypt(swiftCode),
+      encrypt(recipient),
+      encrypt(swift),
     ]);
 
     const newTransaction = new Transaction({
@@ -40,68 +45,6 @@ router.post("/submit", verifyToken, requireRole("customer"), validatePayment, as
     });
   } catch (err) {
     console.error("Payment submission error:", err);
-    return res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// ---------- Get Transactions for Logged-in Customer ----------
-// ---------- Get All Transactions for Employees (Admin Portal) ----------
-router.get("/admin/transactions", verifyToken, requireRole("employee"), async (req, res) => {
-  try {
-    const { status } = req.query;
-    const query = {};
-    if (status) query.status = status;
-
-    const transactions = await Transaction.find(query)
-      .populate("userId", "fullName username")
-      .sort({ transactionDate: -1 })
-      .lean();
-
-    // helper: mask all digits except the last 4
-    const maskToLast4 = (value) => {
-      const s = String(value ?? "");
-      const digits = s.replace(/\D/g, ""); // digits only for masking logic
-      if (digits.length <= 4) return digits; // nothing to mask
-      const masked = "*".repeat(digits.length - 4) + digits.slice(-4);
-      return masked;
-    };
-
-    const results = transactions.map((tx) => {
-      let recipientAccountPlain, swiftCodePlain;
-      try {
-        recipientAccountPlain = decrypt(tx.recipientAccount);
-        swiftCodePlain = decrypt(tx.swiftCode);
-      } catch {
-        recipientAccountPlain = "Decryption error";
-        swiftCodePlain = "Decryption error";
-      }
-
-      // mask recipient account number to last 4 digits only
-      const maskedRecipientAccount =
-        recipientAccountPlain === "Decryption error"
-          ? recipientAccountPlain
-          : maskToLast4(recipientAccountPlain);
-
-      return {
-        id: tx._id,
-        transactionDate: tx.transactionDate,
-        amount: tx.amount,
-        currency: tx.currency,
-        status: tx.status,
-        customer: tx.userId
-          ? { name: tx.userId.fullName, username: tx.userId.username }
-          : null,
-        recipientAccount: maskedRecipientAccount,
-        swiftCode: swiftCodePlain, // leave SWIFT code as-is (not masked)
-      };
-    });
-
-    return res.status(200).json({
-      message: "All transactions retrieved successfully.",
-      transactions: results,
-    });
-  } catch (err) {
-    console.error("Admin fetch error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });

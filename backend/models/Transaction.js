@@ -26,7 +26,6 @@ const transactionSchema = new mongoose.Schema({
     swiftCode:{
         type: String,
         required: true,
-        uppercase: true,
         trim: true
     },
     // Status for employee portal processing
