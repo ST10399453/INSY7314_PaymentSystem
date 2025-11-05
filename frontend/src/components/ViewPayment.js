@@ -16,6 +16,7 @@ export default function ViewPayments() {
   const navigate = useNavigate();
 
   // Keep auth in local state, hydrated from localStorage
+  
   const [auth, setAuth] = useState(() => ({
     token: localStorage.getItem("token") || "",
     role: localStorage.getItem("role") || "customer",
