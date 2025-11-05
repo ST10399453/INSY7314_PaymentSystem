@@ -59,7 +59,7 @@ export const validatePayment = [
      body('amount')
     .exists({ checkFalsy: true }).withMessage('Payment amount is required.')
     .trim()
-    // remove thousands separators if someone sneaks them in
+    // remove thousands separators if someone sneaks them in (SQL Injection)
     .customSanitizer(v => typeof v === 'string' ? v.replace(/,/g, '') : v)
     .whitelist('0123456789.') // STRICT: allow only digits and dot
     .bail()
