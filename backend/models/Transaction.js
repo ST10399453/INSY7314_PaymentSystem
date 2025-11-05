@@ -101,6 +101,10 @@ React Native. 2025. “React Fundamentals · React Native”.
 Samson Omojola. 2024. “Password Hashing in Node.js with Bcrypt”.  
 January 30, 2024 <https://www.honeybadger.io/blog/node-password-hashing/> [accessed 30 September 2025].
 
+Tony. 2023. “Guide to Node’s Crypto Module for Encryption/Decryption”.  
+May 5, 2023 <https://medium.com/@tony.infisical/guide-to-nodes-crypto-module-for-encryption-decryption-65c077176980>  
+[accessed 5 October 2025].
+
 Valsorda, Filippo. 2022. “Mkcert”.
 <https://github.com/FiloSottile/mkcert> [accessed 8 October 2025].
 */
