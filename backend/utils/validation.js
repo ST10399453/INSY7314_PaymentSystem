@@ -16,8 +16,6 @@ const USERNAME_REGEX = /^[a-zA-Z0-9]{4,20}$/;
 // Password: At least 8 characters, with uppercase, lowercase, number, and symbol
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/;
 
-    // [@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
 // Payment amount: Numeric
 const AMOUNT_REGEX = /^\d+(\.\d{1,2})?$/;
 
@@ -58,16 +56,42 @@ export const validateLogin = [
 export const validatePayment = [
 
     // amount whitelisting
-    body('amount').matches(AMOUNT_REGEX).withMessage('Payment amount must be a number with up to 2 decimal places.'),
+     body('amount')
+    .exists({ checkFalsy: true }).withMessage('Payment amount is required.')
+    .trim()
+    // remove thousands separators if someone sneaks them in
+    .customSanitizer(v => typeof v === 'string' ? v.replace(/,/g, '') : v)
+    .whitelist('0123456789.') // STRICT: allow only digits and dot
+    .bail()
+    .matches(AMOUNT_REGEX).withMessage('Payment amount must be a number with up to 2 decimal places.')
+    .bail() //Stop checking once it finds a non-whitelisted character
+    .custom(v => Number(v) > 0).withMessage('Payment amount must be greater than 0.'),
 
     // currency whitelisting
-    body('currency').matches(CURRENCY_REGEX).withMessage('Currency must be a 3-letter code, e.g. ZAR'),
+     body('currency')
+    .exists({ checkFalsy: true }).withMessage('Currency is required.')
+    .trim()
+    .toUpperCase()
+    .whitelist('ABCDEFGHIJKLMNOPQRSTUVWXYZ') // STRICT: letters only
+    .bail()
+    .matches(CURRENCY_REGEX).withMessage('Currency must be ZAR.'),
 
     // recipient account number whitelisting
-    body('recipientAccount').matches(RECIPIENT_ACCOUNT_REGEX).withMessage('Recipient account number must be 6 to 20 digits.'),
+     body('recipientAccount')
+    .exists({ checkFalsy: true }).withMessage('Recipient account number is required.')
+    .trim()
+    .whitelist('0123456789') // STRICT: digits only
+    .bail()
+    .matches(RECIPIENT_ACCOUNT_REGEX).withMessage('Recipient account number must be 6 to 20 digits.'),
 
     // SWIFT code whitelisting
-    body('swiftCode').matches(SWIFT_CODE_REGEX).withMessage('SWIFT code must be 8 or 11 alphanumeric characters.')
+    body('swiftCode')
+    .exists({ checkFalsy: true }).withMessage('SWIFT code is required.')
+    .trim()
+    .toUpperCase()
+    .whitelist('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') // STRICT: A–Z, 0–9
+    .bail()
+    .matches(SWIFT_CODE_REGEX).withMessage('SWIFT code must be 8 or 11 uppercase letters/numbers.')
 ];
 
 /*
