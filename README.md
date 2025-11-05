@@ -3,9 +3,9 @@
 ## **Prequisites**
 Make sure you have the following installed:
 - Node.js
-
 - Git
 - Visual Studio Code
+- **mkcert** (for generating local SSL/TLS certificates)
 
 ## **1. Clone to Visual Studio Code**
 1. **Open Visual Studio Code**
@@ -31,6 +31,8 @@ Make sure you have the following installed:
    When prompted, click Open to load the cloned repository in VS Code.
 
 ## 2. Run the Backend
+
+The backend is configured to run over **HTTPS** (SSL?TLS) locally. Before running, ensure you have the necessary certificate files ('cert.pem' and 'key.pem') in the appropriate directory or use **mkcert** to generate them locally.
 
 In VS Code, open a new terminal (`Ctrl +` or from the top menu: `Terminal → New Terminal`).
 
@@ -64,6 +66,51 @@ Open another terminal in VS Code( `+` in the terminal window)
     ```
     npm start
     ```
+# **Security Implementation**
+
+This application was developed with a DevSecOps approach, incorporating multiple layers of security to protect sensitive customer data and harden the portal against common web attacks.
+
+### **1. Secure Data Handling & Password Security**
+* **Password Hashing & Salting:** User passwords are secured using the **bcrypt** library, implementing hashing with a calculated salt.
+  ```
+  bcrypt.hash(password, saltRounds)
+  ```
+* **Data Encryption at Rest:** Highly sensitive data (customer 'idNumber', 'accountNumber', payment 'recipient' account, and 'swiftCode') are encrypted using **AES-256-GCM** via a custom 'encrypt' utility before storage.
+  ```
+  Example: encrypt(idNumber), encrypt(accountNumber)
+  ```
+
+### **2. Security in Transit and Input Validation**
+
+* **SSL/TLS Enforcement:** All network traffic is served over **HTTPS** (SSL/TLS) to ensure data is secure in transit and to defend against **Man-in-the-Middle (MiTM) attacks**. The HSTS header is also enforced via Helmet.
+* **Input Whitelisting (RegEx):** All critical user inputs are strictly validated against **RegEx patterns** (whitelisting) to prevent malicious data and mitigate **SQL Injection** and **Cross-Site Scripting attacks**.
+
+| Field | RegEx Pattern | Description |
+| :--- | :--- | :--- |
+| **Full Name** | `/^[A-Za-z\s'-]{2,50}$/` | Letters, spaces, hyphens & apostrophe's only |
+| **ID Number** | `/^\d{13}$/` | Exactly 13 digits |
+| **Account Number** | `/^\d{6,12}$/` | 6 to 12 digits |
+| **Password** | `/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/` | Minimum 8 chars, mixed case, number, symbol |
+
+### **3. Portal Hardening and Attack Protection**
+
+The backend is hardened using security middleware, primarily **Helmet**, **express-rate-limit**, **hpp**, and **xss**, to protect against the specific attacks required in the POE.
+
+| Attack | Mitigation Tool/Strategy | Implementation Detail |
+| :--- | :--- | :--- |
+| **Clickjacking** | **Helmet ('frameguard', 'ContentSecurityPolicy')** | Uses 'frameguard: { action: "deny" }' and 'frame-ancestors: ['none']' to prevent site embedding. |
+| **DDoS Attacks** | **Express Rate Limit** & **Timeout** | Limits requests per IP ('max: 200' per minute) and sets timeouts for slow requests. |
+| **SQL Injection** | **HPP** & **RegEx Whitelisting** | **hpp** prevents parameter pollution , and **RegEx** limits characters accepted for input. |
+| **Cross-Site Scripting (XSS)** | **Helmet ('ContentSecurityPolicy')** & **XSS (Sanitizer)** | Helmet blocks inline scripts, and the **xss** library recursively sanitizes all request data. |
+| **Man-in-the-Middle (MiTM)** | **Helmet ('hsts', 'upgrade-insecure-requests')** | HSTS is enabled to force HTTPS, and insecure requests are upgraded to HTTPS. |
+| **Session Jacking** | **XSS (Sanitizer)** & **JWT** | Input sanitization prevents token theft vis XSS, and **JSON Web Tokens (JWT)** provide secure, stateless sessions. |
+
+### **4. DevSecOps Pipeline**
+
+The project includes a **CircleCI pipeline** integrated with **SonarQube** for continuous code analysis.
+
+* **Continuous Integration (CI):** The CircleCI pipeline is configured to be triggered whenever code is pushed to the GitHub repository.
+* **Static Application Security Testing (SAST):** The pipeline runs a **SonarQube scan** to check for **hotspots** and **code smells** (vulnerabilities and quality issues) before deployment.
 
 # **YouTube**
 
