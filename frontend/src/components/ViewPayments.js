@@ -229,7 +229,7 @@ function AdminTable({ rows, onVerify, onSubmit, busyId }) {
               <td style={{ textAlign: "right" }}>{Number(tx.amount).toFixed(2)}</td>
               <td>{tx.currency}</td>
               <td>
-                {tx.customer ? `${tx.customer.name} (${tx.customer.username})` : "-"}
+                {tx.customer ? `${tx.customer.fullName} (${tx.customer.username})` : "-"}
               </td>
               <td>{tx.recipientAccount ?? "-"}</td>
               <td>{tx.swiftCode ?? "-"}</td>
